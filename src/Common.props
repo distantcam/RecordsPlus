@@ -1,0 +1,30 @@
+<Project>
+
+  <PropertyGroup>
+    <AssemblyName>RecordsPlus</AssemblyName>
+    <RootNamespace>RecordsPlus</RootNamespace>
+
+    <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <IsRoslynComponent>true</IsRoslynComponent>
+
+    <Version>0.0.0</Version>
+    <GitSha>abc</GitSha>
+    <PackageProjectUrl>https://github.com/distantcam/RecordsPlus</PackageProjectUrl>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Using Include="Microsoft.CodeAnalysis.SymbolDisplayFormat" Static="true" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AssemblyMetadata Include="GitSha" Value="$(GitSha)" />
+    <AssemblyMetadata Include="PackageProjectUrl" Value="$(PackageProjectUrl)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Shared\**\*.cs" />
+    <AdditionalFiles Include="$(MSBuildThisFileDirectory)Shared\*.md" />
+  </ItemGroup>
+
+</Project>

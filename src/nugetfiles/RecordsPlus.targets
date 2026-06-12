@@ -1,0 +1,21 @@
+<Project>
+
+  <Target Name="_RecordsPlusGatherAnalyzers">
+    <ItemGroup>
+      <_RecordsPlusAnalyzer Include="@(Analyzer)" Condition="'%(Analyzer.NuGetPackageId)' == 'RecordsPlus'" />
+    </ItemGroup>
+  </Target>
+
+  <Target Name="_RecordsPlusAnalyzerMultiTargeting"
+          Condition="'$(SupportsRoslynComponentVersioning)' != 'true'"
+          AfterTargets="ResolvePackageDependenciesForBuild;ResolveNuGetPackageAssets"
+          DependsOnTargets="_RecordsPlusGatherAnalyzers">
+
+    <ItemGroup>
+      <!-- Remove our analyzers targeting roslyn4.x -->
+      <Analyzer Remove="@(_RecordsPlusAnalyzer)"
+                Condition="$([System.String]::Copy('%(_RecordsPlusAnalyzer.Identity)').IndexOf('roslyn4')) &gt;= 0"/>
+    </ItemGroup>
+  </Target>
+
+</Project>

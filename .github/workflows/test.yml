@@ -1,0 +1,54 @@
+name: 🧪 test
+
+on:
+  workflow_call:
+
+jobs:
+  test:
+    name: 🧪 Run tests
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        roslyn: ["3.11", "4.0", "4.4"]
+    steps:
+      - name: 🛒 Check-out code
+        uses: actions/checkout@v6
+
+      - name: 📐 Setup .NET Core SDK
+        uses: actions/setup-dotnet@v5
+        with:
+          global-json-file: src/global.json
+
+      - name: 📦 Cache NuGet packages
+        uses: actions/cache@v5
+        with:
+          path: ~/.nuget/packages
+          key: nuget-${{ hashFiles('**/Directory.Packages.props') }}
+          restore-keys: nuget-
+
+      - name: 🔍 Enable problem matchers
+        run: echo "::add-matcher::.github/matchers/dotnet.json"
+
+      - name: ⚙️ Enable Automated Test Report Artifact Upload
+        uses: actions/github-script@v9
+        with:
+          script: |
+            core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env['ACTIONS_RUNTIME_TOKEN']);
+            core.exportVariable('ACTIONS_RESULTS_URL', process.env['ACTIONS_RESULTS_URL']);
+
+      - name: 🛠️ Build code
+        run: dotnet build --configuration Release
+
+      - name: 🧪 Testing ${{ matrix.roslyn }} code
+        run: >
+          dotnet test
+          --configuration Release
+          -p:GeneratorVersion=${{ matrix.roslyn }}
+
+      - name: Upload Test Results
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: verify-test-results
+          path: |
+            **/*.received.*

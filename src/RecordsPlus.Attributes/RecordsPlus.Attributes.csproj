@@ -1,0 +1,57 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <RootNamespace>RecordsPlus</RootNamespace>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <PackageId>RecordsPlus</PackageId>
+    <Version>0.0.0</Version>
+    <Authors>Cameron MacFarland</Authors>
+    <Description>Source Generator to add features of records to classes and structs.</Description>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageReadmeFile>readme.md</PackageReadmeFile>
+    <PackageOutputPath>$(ProjectDir)..\..\nugets</PackageOutputPath>
+    <PackageProjectUrl>https://github.com/distantcam/RecordsPlus</PackageProjectUrl>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" PrivateAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="$(ArtifactsPath)\bin\RecordsPlus.Roslyn3.11\$(ArtifactsPivots)\RecordsPlus.dll"
+          Pack="true" PackagePath="analyzers/dotnet/roslyn3.11/cs" Visible="false"/>
+
+    <None Include="$(ArtifactsPath)\bin\RecordsPlus.Roslyn4.0\$(ArtifactsPivots)\RecordsPlus.dll"
+          Pack="true" PackagePath="analyzers/dotnet/roslyn4.0/cs" Visible="false"/>
+
+    <None Include="$(ArtifactsPath)\bin\RecordsPlus.Roslyn4.4\$(ArtifactsPivots)\RecordsPlus.dll"
+          Pack="true" PackagePath="analyzers/dotnet/roslyn4.4/cs" Visible="false"/>
+
+
+    <None Include="$(ArtifactsPath)\bin\RecordsPlus.CodeFixes\$(ArtifactsPivots)\RecordsPlus.CodeFixes.dll"
+          Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false"/>
+
+
+    <None Include="$(ProjectDir)..\..\readme.nuget.md"
+          Pack="true" PackagePath="\readme.md" Visible="false" />
+    <None Include="$(ProjectDir)..\..\src\nugetfiles\RecordsPlus.props"
+          Pack="true" PackagePath="build" Visible="false" />
+
+    <None Include="$(ProjectDir)..\..\src\nugetfiles\RecordsPlus.targets"
+          Pack="true" PackagePath="buildTransitive\net8.0" Visible="false" />
+    <None Include="$(ProjectDir)..\..\src\nugetfiles\RecordsPlus.targets"
+          Pack="true" PackagePath="buildTransitive\net462" Visible="false" />
+    <None Include="$(ProjectDir)..\..\src\nugetfiles\RecordsPlus.targets"
+          Pack="true" PackagePath="buildTransitive\netstandard2.0" Visible="false" />
+
+    <None Include="$(ProjectDir)..\..\src\nugetfiles\RecordsPlus.badcompat.targets"
+          Pack="true" PackagePath="buildTransitive\net461\RecordsPlus.targets" Visible="false" />
+    <None Include="$(ProjectDir)..\..\src\nugetfiles\RecordsPlus.badcompat.targets"
+          Pack="true" PackagePath="buildTransitive\netcoreapp2.0\RecordsPlus.targets" Visible="false" />
+  </ItemGroup>
+
+</Project>

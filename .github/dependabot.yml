@@ -1,0 +1,19 @@
+version: 2
+updates:
+  - package-ecosystem: nuget
+    directory: "/"
+    schedule:
+      interval: daily
+    open-pull-requests-limit: 10
+    ignore:
+      - dependency-name: "Microsoft.CodeAnalysis.Analyzers"
+      - dependency-name: "Microsoft.CodeAnalysis.CSharp"
+    groups:
+      tunit:
+        patterns:
+          - "TUnit"
+          - "Verify.TUnit"
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: weekly
