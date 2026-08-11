@@ -31,7 +31,9 @@ partial class ClassTest : global::System.IEquatable<ClassTest>
 	protected virtual bool PrintMembers(global::System.Text.StringBuilder builder)
 	{
 		global::System.Runtime.CompilerServices.RuntimeHelpers.EnsureSufficientExecutionStack();
-		builder.Append("Number = ");
+		builder.Append("Value = ");
+		builder.Append(Value.ToString());
+		builder.Append(", Number = ");
 		builder.Append(Number.ToString());
 		builder.Append(", Text = ");
 		builder.Append((object)Text);
@@ -40,7 +42,7 @@ partial class ClassTest : global::System.IEquatable<ClassTest>
 
 	public virtual bool Equals(ClassTest other)
 	{
-		return (object)other != null && EqualityContract == other.EqualityContract && global::System.Collections.Generic.EqualityComparer<int>.Default.Equals(Number, other.Number) && global::System.Collections.Generic.EqualityComparer<string>.Default.Equals(Text, other.Text);
+		return (object)other != null && EqualityContract == other.EqualityContract && global::System.Collections.Generic.EqualityComparer<int>.Default.Equals(Value, other.Value) && global::System.Collections.Generic.EqualityComparer<int>.Default.Equals(Number, other.Number) && global::System.Collections.Generic.EqualityComparer<string>.Default.Equals(Text, other.Text);
 	}
 
 	public override bool Equals(object obj)
@@ -53,6 +55,7 @@ partial class ClassTest : global::System.IEquatable<ClassTest>
 		unchecked
 		{
 			int hashCode = EqualityContract.GetHashCode();
+			hashCode = hashCode * -1521134295 + global::System.Collections.Generic.EqualityComparer<int>.Default.GetHashCode(Value);
 			hashCode = hashCode * -1521134295 + global::System.Collections.Generic.EqualityComparer<int>.Default.GetHashCode(Number);
 			hashCode = hashCode * -1521134295 + global::System.Collections.Generic.EqualityComparer<string>.Default.GetHashCode(Text);
 			return hashCode;

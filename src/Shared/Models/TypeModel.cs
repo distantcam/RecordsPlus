@@ -77,6 +77,11 @@ internal readonly record struct TypeModel(
             return false;
         }
 
+        if (HasIgnored(m))
+        {
+            return false;
+        }
+
         if (m.Kind is SymbolKind.Field)
         {
             return true;
@@ -99,6 +104,12 @@ internal readonly record struct TypeModel(
     private static bool IsPrintableProperty(IPropertySymbol property)
     {
         return !property.IsIndexer && !property.IsOverride && property.GetMethod is not null;
+    }
+
+    private static bool HasIgnored(ISymbol symbol)
+    {
+        return symbol.GetAttributes()
+            .Any(static a => a.AttributeClass?.ToDisplayString() == AttributeNames.RecordIgnore);
     }
 }
 
