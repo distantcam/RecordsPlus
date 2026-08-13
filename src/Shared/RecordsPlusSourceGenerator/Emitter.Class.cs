@@ -11,6 +11,15 @@ public partial class RecordsPlusSourceGenerator
 {
     private static partial class Emitter
     {
+        private static void EmitRecord(CodeBuilder source, TypeModel type)
+        {
+            EmitPrintMembers(source, type);
+            source.AppendLine();
+            EmitClassEquals(source, type);
+            source.AppendLine();
+            EmitGetHashCode(source, type, readOnly: false);
+        }
+
         private static void EmitClass(CodeBuilder source, TypeModel type)
         {
             EmitEqualityContract(source, type);
@@ -64,7 +73,12 @@ public partial class RecordsPlusSourceGenerator
                 {
                     source.AppendIndent().Append($"return base.Equals(({type.BaseTypeName})other)");
                     foreach (var member in type.Members)
+                    {
+                        if (member.IgnoreEquality)
+                            continue;
+
                         source.Append($" && {EqualityComparer(member)}.Equals({member.Name}, other.{member.Name})");
+                    }
                     source.Append(";").AppendLine();
                 }
             }
@@ -76,7 +90,12 @@ public partial class RecordsPlusSourceGenerator
                     source.AppendIndent().Append("return (object)other != null");
                     source.Append(" && EqualityContract == other.EqualityContract");
                     foreach (var member in type.Members)
+                    {
+                        if (member.IgnoreEquality)
+                            continue;
+
                         source.Append($" && {EqualityComparer(member)}.Equals({member.Name}, other.{member.Name})");
+                    }
                     source.Append(";").AppendLine();
                 }
             }

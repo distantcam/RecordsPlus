@@ -10,7 +10,6 @@ public sealed partial class RecordsPlusSourceGenerator : IIncrementalGenerator
             AttributeNames.Record,
             GeneratorUtilities.IsTypeDeclarationWithAttributes,
             static (c, ct) => TypeModel.Create((INamedTypeSymbol)c.TargetSymbol))
-            .Where(static (t) => !t.IsRecord)
             .WithTrackingName(TrackingNames.TypeModels);
 
         context.RegisterSourceOutput(types, Emitter.GenerateSource);

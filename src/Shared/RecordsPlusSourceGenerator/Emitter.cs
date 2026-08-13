@@ -16,17 +16,18 @@ public partial class RecordsPlusSourceGenerator
     {
         public static void GenerateSource(EmitterContext context, TypeModel type)
         {
-            if (type.IsRecord)
-                return;
-
             var source = new CodeBuilder()
                 .AppendHeader()
                 .AppendLine();
 
             using (source.StartPartialType(type))
             {
-                if (type.IsStruct)
+                if (type.IsRecord && type.IsStruct)
+                    EmitRecordStruct(source, type);
+                else if (type.IsStruct)
                     EmitStruct(source, type);
+                else if (type.IsRecord)
+                    EmitRecord(source, type);
                 else
                     EmitClass(source, type);
             }
@@ -94,6 +95,9 @@ public partial class RecordsPlusSourceGenerator
                 var first = true;
                 foreach (var member in type.Members)
                 {
+                    if (member.IgnoreToString)
+                        continue;
+
                     var prefix = first ? "" : ", ";
                     first = false;
                     source.AppendLine($"builder.Append(\"{prefix}{member.Name} = \");");
@@ -128,7 +132,12 @@ public partial class RecordsPlusSourceGenerator
                     }
 
                     foreach (var member in type.Members)
+                    {
+                        if (member.IgnoreEquality)
+                            continue;
+
                         source.AppendLine($"hashCode = hashCode * -1521134295 + {EqualityComparer(member)}.GetHashCode({member.Name});");
+                    }
 
                     source.AppendLine("return hashCode;");
                 }

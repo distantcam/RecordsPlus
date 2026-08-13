@@ -11,6 +11,17 @@ public partial class RecordsPlusSourceGenerator
 {
     private static partial class Emitter
     {
+        private static void EmitRecordStruct(CodeBuilder source, TypeModel type)
+        {
+            var readOnly = !type.IsReadOnly;
+
+            EmitPrintMembers(source, type);
+            source.AppendLine();
+            EmitStructEquals(source, type);
+            source.AppendLine();
+            EmitGetHashCode(source, type, readOnly: readOnly);
+        }
+
         private static void EmitStruct(CodeBuilder source, TypeModel type)
         {
             // Members of a `readonly struct` are implicitly readonly, so only emit the
@@ -46,6 +57,9 @@ public partial class RecordsPlusSourceGenerator
                 var first = true;
                 foreach (var member in type.Members)
                 {
+                    if (member.IgnoreEquality)
+                        continue;
+
                     if (!first)
                         source.Append(" && ");
                     first = false;

@@ -108,8 +108,11 @@ internal readonly record struct TypeModel(
 
     private static bool HasIgnored(ISymbol symbol)
     {
-        return symbol.GetAttributes()
-            .Any(static a => a.AttributeClass?.ToDisplayString() == AttributeNames.RecordIgnore);
+        var ignoreAttribute = symbol.GetAttributes()
+            .FirstOrDefault(static a => a.AttributeClass?.ToDisplayString()
+            == AttributeNames.RecordIgnore);
+        var ignoreValue = (int?)ignoreAttribute?.ConstructorArguments[0].Value;
+        return ignoreValue == 3;
     }
 }
 
@@ -117,11 +120,18 @@ internal readonly record struct MemberModel(
     string Name,
     SymbolKind Kind,
     bool IsValueType,
+    bool IgnoreEquality,
+    bool IgnoreToString,
     string TypeName
 )
 {
     public static MemberModel Create(ISymbol member)
     {
+        var ignoreAttribute = member.GetAttributes()
+            .FirstOrDefault(static a => a.AttributeClass?.ToDisplayString()
+            == AttributeNames.RecordIgnore);
+        var ignoreValue = (int?)ignoreAttribute?.ConstructorArguments[0].Value ?? 0;
+
         var type = member.Kind switch
         {
             SymbolKind.Field => ((IFieldSymbol)member).Type,
@@ -133,6 +143,8 @@ internal readonly record struct MemberModel(
             Name: member.Name,
             Kind: member.Kind,
             IsValueType: type.IsValueType,
+            IgnoreEquality: (ignoreValue & 1) != 0, // IgnoreSetting.Equality
+            IgnoreToString: (ignoreValue & 2) != 0, // IgnoreSetting.ToString
             TypeName: type.ToDisplayString(FullyQualifiedFormat)
         );
     }
