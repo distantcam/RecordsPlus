@@ -63,7 +63,7 @@ namespace TestNamespace
 
 		public static bool operator ==(NamespaceTest left, NamespaceTest right)
 		{
-			return (object)left == right || left != null && left.Equals(right);
+			return (object)left == right || (object)left != null && left.Equals(right);
 		}
 
 		public static bool operator !=(NamespaceTest left, NamespaceTest right)

@@ -13,7 +13,7 @@
     <Description>Source Generator to add features of records to classes and structs.</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageReadmeFile>readme.md</PackageReadmeFile>
-    <PackageOutputPath>$(ProjectDir)..\..\nugets</PackageOutputPath>
+    <PackageOutputPath>$(ProjectDir)../../nugets</PackageOutputPath>
     <PackageProjectUrl>https://github.com/distantcam/RecordsPlus</PackageProjectUrl>
   </PropertyGroup>
 
@@ -30,11 +30,6 @@
 
     <None Include="$(ArtifactsPath)\bin\RecordsPlus.Roslyn4.4\$(ArtifactsPivots)\RecordsPlus.dll"
           Pack="true" PackagePath="analyzers/dotnet/roslyn4.4/cs" Visible="false"/>
-
-
-    <None Include="$(ArtifactsPath)\bin\RecordsPlus.CodeFixes\$(ArtifactsPivots)\RecordsPlus.CodeFixes.dll"
-          Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false"/>
-
 
     <None Include="$(ProjectDir)..\..\readme.nuget.md"
           Pack="true" PackagePath="\readme.md" Visible="false" />

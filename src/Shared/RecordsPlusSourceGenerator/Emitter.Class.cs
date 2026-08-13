@@ -115,7 +115,7 @@ public partial class RecordsPlusSourceGenerator
             source.AppendLine($"public static bool operator ==({type.QualifiedName} left, {type.QualifiedName} right)");
             using (source.StartBlock())
             {
-                source.AppendLine("return (object)left == right || left != null && left.Equals(right);");
+                source.AppendLine("return (object)left == right || (object)left != null && left.Equals(right);");
             }
             source.AppendLine();
             source.AppendLine($"public static bool operator !=({type.QualifiedName} left, {type.QualifiedName} right)");

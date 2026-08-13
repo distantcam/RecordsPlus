@@ -7,9 +7,9 @@ namespace RecordsPlus;
 public enum IgnoreSetting
 {
     None,
-    Equality,
-    ToString,
-    All
+    Equality = 1,
+    ToString = 2,
+    All,
 }
 
 [AttributeUsage(Class | Struct, Inherited = false)]

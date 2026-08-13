@@ -47,7 +47,7 @@ public partial class RecordsPlusSourceGenerator
             source.AppendLine($"public {readOnly}bool Equals({type.QualifiedName} other)");
             using (source.StartBlock())
             {
-                if (type.Members.Count == 0)
+                if (!type.Members.Any(static m => !m.IgnoreEquality))
                 {
                     source.AppendLine("return true;");
                     return;

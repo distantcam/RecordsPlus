@@ -61,7 +61,7 @@ partial class GenericClassTest<T> : global::System.IEquatable<GenericClassTest<T
 
 	public static bool operator ==(GenericClassTest<T> left, GenericClassTest<T> right)
 	{
-		return (object)left == right || left != null && left.Equals(right);
+		return (object)left == right || (object)left != null && left.Equals(right);
 	}
 
 	public static bool operator !=(GenericClassTest<T> left, GenericClassTest<T> right)

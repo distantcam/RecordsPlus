@@ -55,7 +55,7 @@ partial class EmptyClassTest : global::System.IEquatable<EmptyClassTest>
 
 	public static bool operator ==(EmptyClassTest left, EmptyClassTest right)
 	{
-		return (object)left == right || left != null && left.Equals(right);
+		return (object)left == right || (object)left != null && left.Equals(right);
 	}
 
 	public static bool operator !=(EmptyClassTest left, EmptyClassTest right)

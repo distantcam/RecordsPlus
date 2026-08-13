@@ -63,7 +63,7 @@ partial class OuterClass
 
 		public static bool operator ==(NestedClassTest left, NestedClassTest right)
 		{
-			return (object)left == right || left != null && left.Equals(right);
+			return (object)left == right || (object)left != null && left.Equals(right);
 		}
 
 		public static bool operator !=(NestedClassTest left, NestedClassTest right)

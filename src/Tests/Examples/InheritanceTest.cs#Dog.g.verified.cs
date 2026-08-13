@@ -68,7 +68,7 @@ partial class Dog : global::System.IEquatable<Dog>
 
 	public static bool operator ==(Dog left, Dog right)
 	{
-		return (object)left == right || left != null && left.Equals(right);
+		return (object)left == right || (object)left != null && left.Equals(right);
 	}
 
 	public static bool operator !=(Dog left, Dog right)

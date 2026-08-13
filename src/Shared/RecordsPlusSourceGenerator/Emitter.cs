@@ -69,12 +69,10 @@ public partial class RecordsPlusSourceGenerator
             source.AppendLine($"{modifier} bool PrintMembers(global::System.Text.StringBuilder builder)");
             using (source.StartBlock())
             {
-                // Guards against stack overflow when printing deep inheritance chains.
-                // Structs cannot participate in inheritance, so the guard is omitted.
                 if (!type.IsStruct)
                     source.AppendLine("global::System.Runtime.CompilerServices.RuntimeHelpers.EnsureSufficientExecutionStack();");
 
-                if (type.Members.Count == 0)
+                if (!type.Members.Any(static m => !m.IgnoreToString))
                 {
                     if (hasBase)
                         source.AppendLine("return base.PrintMembers(builder);");

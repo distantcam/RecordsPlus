@@ -55,7 +55,7 @@ partial class IgnoreTest : global::System.IEquatable<IgnoreTest>
 
 	public static bool operator ==(IgnoreTest left, IgnoreTest right)
 	{
-		return (object)left == right || left != null && left.Equals(right);
+		return (object)left == right || (object)left != null && left.Equals(right);
 	}
 
 	public static bool operator !=(IgnoreTest left, IgnoreTest right)
