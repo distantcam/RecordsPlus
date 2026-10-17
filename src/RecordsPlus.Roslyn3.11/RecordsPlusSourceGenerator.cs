@@ -15,7 +15,7 @@ public sealed partial class RecordsPlusSourceGenerator : ISourceGenerator
 
                 && (type = GeneratorUtilities.GetSymbol<INamedTypeSymbol>(context, cancellationToken)) != null
 
-                && Utilities.HasAttribute(type, AttributeNames.Record))
+                && GeneratorUtilities.HasAttribute(type, AttributeNames.Record))
             {
                 (TypeModels ??= []).Add(TypeModel.Create(type));
             }

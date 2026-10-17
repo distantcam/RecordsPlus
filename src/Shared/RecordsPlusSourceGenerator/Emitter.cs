@@ -20,7 +20,7 @@ public partial class RecordsPlusSourceGenerator
                 .AppendHeader()
                 .AppendLine();
 
-            using (source.StartPartialType(type))
+            using (source.StartPartialType(type, [$"global::System.IEquatable<{type.QualifiedName}>"]))
             {
                 if (type.IsRecord && type.IsStruct)
                     EmitRecordStruct(source, type);
@@ -142,7 +142,7 @@ public partial class RecordsPlusSourceGenerator
             }
         }
 
-        private static string EqualityComparer(MemberModel member) =>
-            $"global::System.Collections.Generic.EqualityComparer<{member.TypeName}>.Default";
+        private static string EqualityComparer(MemberModel member)
+            => $"global::System.Collections.Generic.EqualityComparer<{member.TypeName}>.Default";
     }
 }

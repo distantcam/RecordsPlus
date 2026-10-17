@@ -4,7 +4,7 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>net10.0</TargetFramework>
     <IsPackable>false</IsPackable>
-    <NoWarn>CS0169;CS0414</NoWarn>
+    <NoWarn>CS0169;CS0414;NU1902;NU1903</NoWarn>
     <AssemblyName>RecordsPlus.Tests</AssemblyName>
   </PropertyGroup>
 
@@ -32,24 +32,17 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Examples\*.cs" />
-    <Compile Remove="GuardExamples\*.cs" />
-    <Compile Remove="LangExamples\*.cs" />
-    <Compile Remove="ReadmeExamples\*.cs" />
-    <None Include="Examples\*.cs" />
-    <None Include="GuardExamples\*.cs" />
-    <None Include="LangExamples\*.cs" />
-    <None Include="ReadmeExamples\*.cs" />
+    <Compile Remove="*Examples\*.cs" />
+    <None Include="*Examples\*.cs" />
   </ItemGroup>
 
   <ItemGroup>
-    <!--<PackageReference Include="MarkdownSnippets.MsBuild" PrivateAssets="all" />-->
+    <PackageReference Include="MarkdownSnippets.MsBuild" PrivateAssets="all" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.SourceGenerators.Testing" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
     <PackageReference Include="TUnit" />
-    <PackageReference Include="Verify.DiffPlex" />
     <PackageReference Include="Verify.SourceGenerators" />
     <PackageReference Include="Verify.TUnit" />
   </ItemGroup>

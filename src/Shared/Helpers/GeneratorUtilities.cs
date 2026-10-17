@@ -2,12 +2,6 @@
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-#if ROSLYN_3
-using EmitterContext = Microsoft.CodeAnalysis.GeneratorExecutionContext;
-#elif ROSLYN_4
-using EmitterContext = Microsoft.CodeAnalysis.SourceProductionContext;
-#endif
-
 internal static class GeneratorUtilities
 {
     public static readonly SymbolDisplayFormat HintSymbolDisplayFormat = new(
@@ -32,11 +26,11 @@ internal static class GeneratorUtilities
         };
     }
 
-    public static string EscapeKeywordIdentifier(this string identifier) =>
-        SyntaxFacts.IsKeywordKind(SyntaxFacts.GetKeywordKind(identifier)) ? "@" + identifier : identifier;
+    public static string EscapeKeywordIdentifier(this string identifier)
+        => SyntaxFacts.IsKeywordKind(SyntaxFacts.GetKeywordKind(identifier)) ? "@" + identifier : identifier;
 
-    public static string? GetNamespace(ITypeSymbol type) =>
-        type.ContainingNamespace.IsGlobalNamespace ? null : type.ContainingNamespace.ToString();
+    public static string? GetNamespace(ITypeSymbol type)
+        => type.ContainingNamespace.IsGlobalNamespace ? null : type.ContainingNamespace.ToString();
 
     public static EquatableList<string> GetTypeDeclarations(ITypeSymbol type)
     {
@@ -49,12 +43,13 @@ internal static class GeneratorUtilities
                 { IsRecord: true, IsValueType: true } => "record struct",
                 { IsRecord: true, IsValueType: false } => "record",
                 { IsRecord: false, IsValueType: true } => "struct",
-                { IsRecord: false, IsValueType: false } => "class",
+                { IsRecord: false, IsValueType: false, TypeKind: TypeKind.Class } => "class",
+                { IsRecord: false, IsValueType: false, TypeKind: TypeKind.Interface } => "interface",
                 _ => string.Empty
             };
 
             var staticKeyword = currentType.IsStatic ? "static " : "";
-            var typeName = currentType.ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat);
+            var typeName = currentType.ToDisplayString(MinimallyQualifiedFormat);
             typeDeclarations.Push($"{staticKeyword}partial {typeKeyword} {typeName}");
             currentType = currentType.ContainingType;
         }
@@ -77,8 +72,19 @@ internal static class GeneratorUtilities
     public static TSymbol? GetSymbol<TSymbol>(GeneratorSyntaxContext context, CancellationToken cancellationToken) where TSymbol : class, ISymbol
         => context.SemanticModel.GetDeclaredSymbol(context.Node, cancellationToken) as TSymbol;
 
+    // Roslyn 3.11 and 4.0 visit every declaration of a partial type that has attributes, so
+    // only answer for the first of those.
+    public static TSymbol? GetPrimarySymbol<TSymbol>(GeneratorSyntaxContext context, CancellationToken cancellationToken) where TSymbol : class, ISymbol
+    {
+        var symbol = GetSymbol<TSymbol>(context, cancellationToken);
+        var primary = symbol?.DeclaringSyntaxReferences
+            .Select(r => r.GetSyntax(cancellationToken))
+            .FirstOrDefault(n => IsTypeDeclarationWithAttributes(n, cancellationToken));
+        return primary is null || (primary.SyntaxTree == context.Node.SyntaxTree && primary.Span == context.Node.Span) ? symbol : null;
+    }
+
     public static bool HasAttribute(ISymbol? symbol, string attributeName)
     {
-        return symbol != null && symbol.GetAttributes().Any(a => a.AttributeClass?.ToDisplayString() == attributeName);
+        return symbol?.GetAttributes().Any(a => a.AttributeClass?.ToDisplayString() == attributeName) == true;
     }
 }

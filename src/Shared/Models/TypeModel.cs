@@ -3,7 +3,6 @@ using Microsoft.CodeAnalysis;
 
 internal readonly record struct TypeModel(
     string? Namespace,
-    string? ClassBase,
     EquatableList<string> TypeDeclarations,
 
     string Name,
@@ -49,7 +48,6 @@ internal readonly record struct TypeModel(
 
         return new(
             Namespace: GeneratorUtilities.GetNamespace(type),
-            ClassBase: $"global::System.IEquatable<{qualifiedName}>",
             TypeDeclarations: GeneratorUtilities.GetTypeDeclarations(type),
 
             Name: type.Name,

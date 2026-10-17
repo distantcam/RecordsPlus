@@ -132,7 +132,7 @@ internal sealed class GeneratedBehaviorTests
 
         return System.Reflection.Assembly.Load(peStream.ToArray());
 
-        static IEnumerable<string> Errors(ImmutableArray<Diagnostic> diagnostics) =>
-            diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).Select(d => d.ToString());
+        static IEnumerable<string> Errors(ImmutableArray<Diagnostic> diagnostics)
+            => diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).Select(d => d.ToString());
     }
 }

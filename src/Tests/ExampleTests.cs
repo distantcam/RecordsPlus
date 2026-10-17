@@ -93,10 +93,7 @@ internal sealed class ExampleTests
     [System.Diagnostics.CodeAnalysis.SuppressMessage(
         "Performance", "CA1812:Avoid uninstantiated internal classes",
         Justification = "Instantiated in generated code.")]
-    internal sealed class CompilationBuilderFactory : CompilationBuilderFactory<RecordAttribute>
-    {
-        protected override IEnumerable<string> GetNuGetIds() => ["Microsoft.Extensions.DependencyInjection.Abstractions"];
-    }
+    internal sealed class CompilationBuilderFactory : CompilationBuilderFactory<RecordAttribute>;
 
     public static IEnumerable<Func<CodeFileTheoryData>> GetExamples()
     {
@@ -104,5 +101,12 @@ internal sealed class ExampleTests
         {
             yield return () => new CodeFileTheoryData(example);
         }
+
+#if ROSLYN_4_4
+        foreach (var readmeExample in GetExamplesFiles("ReadmeExamples"))
+        {
+            yield return () => new CodeFileTheoryData(readmeExample);
+        }
+#endif
     }
 }
