@@ -1,5 +1,4 @@
-﻿using System.Collections.Immutable;
-using Microsoft.CodeAnalysis;
+﻿using Microsoft.CodeAnalysis;
 
 internal readonly record struct TypeModel(
     string? Namespace,
@@ -22,29 +21,15 @@ internal readonly record struct TypeModel(
 {
     public static TypeModel Create(INamedTypeSymbol type)
     {
-        var baseMembers = type.BaseType?.GetMembers() ?? ImmutableArray<ISymbol>.Empty;
-
         var members = type.GetMembers()
             .Where(IsPrintable)
             .Select(MemberModel.Create);
 
         var qualifiedName = type.ToDisplayString(MinimallyQualifiedFormat);
 
-        var baseType = type.BaseType;
-        var baseHasAttribute = baseType is not null
-            && GeneratorUtilities.HasAttribute(baseType, AttributeNames.Record);
-
-        var baseHasEqualityContract = baseHasAttribute
-            || baseMembers.OfType<IPropertySymbol>()
-                .Any(static s => s.Name == "EqualityContract"
-                    && s.GetMethod != null
-                    && s.Type.ToDisplayString(FullyQualifiedFormat) == "System.Type");
-
-        var baseHasPrintMembers = baseHasAttribute
-            || baseMembers.OfType<IMethodSymbol>()
-                .Any(static s => s.Name == "PrintMembers"
-                    && s.Parameters.Length == 1
-                    && s.Parameters[0].Type.ToDisplayString(FullyQualifiedFormat) == "System.Text.StringBuilder");
+        var equalityContractBase = FindBaseDeclaring(type, DeclaresEqualityContract);
+        var printMembersBase = FindBaseDeclaring(type, DeclaresPrintMembers);
+        var equalsBase = FindBaseDeclaring(type, DeclaresOverridableEquals);
 
         return new(
             Namespace: GeneratorUtilities.GetNamespace(type),
@@ -58,15 +43,47 @@ internal readonly record struct TypeModel(
             IsStruct: type.IsValueType,
             IsReadOnly: type.IsReadOnly,
             IsSealed: type.IsSealed,
-            BaseTypeName: baseHasEqualityContract
-                ? baseType!.ToDisplayString(FullyQualifiedFormat)
-                : null,
-            BaseTypeHasPrintMember: baseHasPrintMembers,
-            BaseTypeHasEqualityContract: baseHasEqualityContract,
+            BaseTypeName: equalsBase?.ToDisplayString(FullyQualifiedFormat),
+            BaseTypeHasPrintMember: printMembersBase is not null,
+            BaseTypeHasEqualityContract: equalityContractBase is not null,
 
             Members: new(members)
         );
     }
+
+    // The member can be declared anywhere up the chain - an unmarked base still inherits it -
+    // so keep walking until it is found rather than only looking at the immediate base.
+    private static INamedTypeSymbol? FindBaseDeclaring(INamedTypeSymbol type, Func<INamedTypeSymbol, bool> declares)
+    {
+        for (var baseType = type.BaseType; baseType is not null; baseType = baseType.BaseType)
+        {
+            // A base marked [Record] has these generated for it, but not until after this type
+            // is modelled, so trust the attribute instead of looking the members up.
+            if (GeneratorUtilities.HasAttribute(baseType, AttributeNames.Record) || declares(baseType))
+                return baseType;
+        }
+        return null;
+    }
+
+    private static bool DeclaresEqualityContract(INamedTypeSymbol type)
+        => type.GetMembers("EqualityContract").OfType<IPropertySymbol>()
+            .Any(static s => s.GetMethod is not null
+                && s.Type.ToDisplayString(FullyQualifiedFormat) == "global::System.Type");
+
+    // Without a base `Equals(Base)` to chain to, `base.Equals((Base)other)` would silently
+    // bind to `object.Equals(object)` and compare by reference, so only chain when there is one.
+    private static bool DeclaresOverridableEquals(INamedTypeSymbol type)
+        => type.SpecialType != SpecialType.System_Object // object.Equals(object) is not a chain
+        && type.GetMembers("Equals").OfType<IMethodSymbol>()
+            .Any(m => !m.IsSealed
+                && (m.IsVirtual || m.IsOverride || m.IsAbstract)
+                && m.Parameters.Length == 1
+                && SymbolEqualityComparer.Default.Equals(m.Parameters[0].Type, type));
+
+    private static bool DeclaresPrintMembers(INamedTypeSymbol type)
+        => type.GetMembers("PrintMembers").OfType<IMethodSymbol>()
+            .Any(static s => s.Parameters.Length == 1
+                && s.Parameters[0].Type.ToDisplayString(FullyQualifiedFormat) == "global::System.Text.StringBuilder");
 
     private static bool IsPrintable(ISymbol m)
     {

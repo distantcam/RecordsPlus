@@ -60,13 +60,17 @@ public partial class RecordsPlusSourceGenerator
             if (type.BaseTypeName is not null)
             {
                 // Override the base record's Equals so that comparing through the base
-                // type still routes to the most derived equality check.
-                source.AppendLine($"public override bool Equals({type.BaseTypeName} other)");
-                using (source.StartBlock())
+                // type still routes to the most derived equality check. The compiler already
+                // synthesizes this one for a `record`, so emitting it there would be a duplicate.
+                if (!type.IsRecord)
                 {
-                    source.AppendLine($"return Equals(other as {type.QualifiedName});");
+                    source.AppendLine($"public override bool Equals({type.BaseTypeName} other)");
+                    using (source.StartBlock())
+                    {
+                        source.AppendLine($"return Equals(other as {type.QualifiedName});");
+                    }
+                    source.AppendLine();
                 }
-                source.AppendLine();
 
                 source.AppendLine($"{equalsModifier} bool Equals({type.QualifiedName} other)");
                 using (source.StartBlock())
@@ -77,7 +81,7 @@ public partial class RecordsPlusSourceGenerator
                         if (member.IgnoreEquality)
                             continue;
 
-                        source.Append($" && {EqualityComparer(member)}.Equals({member.Name}, other.{member.Name})");
+                        source.Append($" && {EqualityComparer(member)}.Equals({Self(member)}, {Other(member)})");
                     }
                     source.Append(";").AppendLine();
                 }
@@ -94,7 +98,8 @@ public partial class RecordsPlusSourceGenerator
                         if (member.IgnoreEquality)
                             continue;
 
-                        source.Append($" && {EqualityComparer(member)}.Equals({member.Name}, other.{member.Name})");
+                        source.AppendLine().AppendIndent()
+                            .Append($"{source.IndentChar}&& {EqualityComparer(member)}.Equals({Self(member)}, {Other(member)})");
                     }
                     source.Append(";").AppendLine();
                 }

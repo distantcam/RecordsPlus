@@ -100,9 +100,9 @@ public partial class RecordsPlusSourceGenerator
                     first = false;
                     source.AppendLine($"builder.Append(\"{prefix}{member.Name} = \");");
                     if (member.IsValueType)
-                        source.AppendLine($"builder.Append({member.Name}.ToString());");
+                        source.AppendLine($"builder.Append({Self(member)}.ToString());");
                     else
-                        source.AppendLine($"builder.Append((object){member.Name});");
+                        source.AppendLine($"builder.Append((object){Self(member)});");
                 }
 
                 source.AppendLine("return true;");
@@ -134,7 +134,7 @@ public partial class RecordsPlusSourceGenerator
                         if (member.IgnoreEquality)
                             continue;
 
-                        source.AppendLine($"hashCode = hashCode * -1521134295 + {EqualityComparer(member)}.GetHashCode({member.Name});");
+                        source.AppendLine($"hashCode = hashCode * -1521134295 + {EqualityComparer(member)}.GetHashCode({Self(member)});");
                     }
 
                     source.AppendLine("return hashCode;");
@@ -144,5 +144,14 @@ public partial class RecordsPlusSourceGenerator
 
         private static string EqualityComparer(MemberModel member)
             => $"global::System.Collections.Generic.EqualityComparer<{member.TypeName}>.Default";
+
+        // `builder`, `other` and `hashCode` are all legal member names, and a member can be a
+        // keyword, so qualify and escape every reference instead of letting it bind to the
+        // generated local or parameter of the same name.
+        private static string Self(MemberModel member)
+            => $"this.{member.Name.EscapeKeywordIdentifier()}";
+
+        private static string Other(MemberModel member)
+            => $"other.{member.Name.EscapeKeywordIdentifier()}";
     }
 }

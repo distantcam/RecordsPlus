@@ -41,7 +41,7 @@ partial class IgnoreAllToString : global::System.IEquatable<IgnoreAllToString>
 
 	public virtual bool Equals(IgnoreAllToString other)
 	{
-		return base.Equals((global::IgnoreAllToStringBase)other) && global::System.Collections.Generic.EqualityComparer<int>.Default.Equals(Number, other.Number);
+		return base.Equals((global::IgnoreAllToStringBase)other) && global::System.Collections.Generic.EqualityComparer<int>.Default.Equals(this.Number, other.Number);
 	}
 
 	public override bool Equals(object obj)
@@ -55,7 +55,7 @@ partial class IgnoreAllToString : global::System.IEquatable<IgnoreAllToString>
 		{
 			int hashCode = EqualityContract.GetHashCode();
 			hashCode = hashCode * -1521134295 + base.GetHashCode();
-			hashCode = hashCode * -1521134295 + global::System.Collections.Generic.EqualityComparer<int>.Default.GetHashCode(Number);
+			hashCode = hashCode * -1521134295 + global::System.Collections.Generic.EqualityComparer<int>.Default.GetHashCode(this.Number);
 			return hashCode;
 		}
 	}

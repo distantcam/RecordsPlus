@@ -32,13 +32,14 @@ partial class IgnoreAllToStringBase : global::System.IEquatable<IgnoreAllToStrin
 	{
 		global::System.Runtime.CompilerServices.RuntimeHelpers.EnsureSufficientExecutionStack();
 		builder.Append("Value = ");
-		builder.Append((object)Value);
+		builder.Append((object)this.Value);
 		return true;
 	}
 
 	public virtual bool Equals(IgnoreAllToStringBase other)
 	{
-		return (object)other != null && EqualityContract == other.EqualityContract && global::System.Collections.Generic.EqualityComparer<string>.Default.Equals(Value, other.Value);
+		return (object)other != null && EqualityContract == other.EqualityContract
+			&& global::System.Collections.Generic.EqualityComparer<string>.Default.Equals(this.Value, other.Value);
 	}
 
 	public override bool Equals(object obj)
@@ -51,7 +52,7 @@ partial class IgnoreAllToStringBase : global::System.IEquatable<IgnoreAllToStrin
 		unchecked
 		{
 			int hashCode = EqualityContract.GetHashCode();
-			hashCode = hashCode * -1521134295 + global::System.Collections.Generic.EqualityComparer<string>.Default.GetHashCode(Value);
+			hashCode = hashCode * -1521134295 + global::System.Collections.Generic.EqualityComparer<string>.Default.GetHashCode(this.Value);
 			return hashCode;
 		}
 	}

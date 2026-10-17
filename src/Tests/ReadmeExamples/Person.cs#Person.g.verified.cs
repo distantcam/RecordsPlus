@@ -32,15 +32,17 @@ partial class Person : global::System.IEquatable<Person>
 	{
 		global::System.Runtime.CompilerServices.RuntimeHelpers.EnsureSufficientExecutionStack();
 		builder.Append("Name = ");
-		builder.Append((object)Name);
+		builder.Append((object)this.Name);
 		builder.Append(", Age = ");
-		builder.Append(Age.ToString());
+		builder.Append(this.Age.ToString());
 		return true;
 	}
 
 	public virtual bool Equals(Person other)
 	{
-		return (object)other != null && EqualityContract == other.EqualityContract && global::System.Collections.Generic.EqualityComparer<string>.Default.Equals(Name, other.Name) && global::System.Collections.Generic.EqualityComparer<int>.Default.Equals(Age, other.Age);
+		return (object)other != null && EqualityContract == other.EqualityContract
+			&& global::System.Collections.Generic.EqualityComparer<string>.Default.Equals(this.Name, other.Name)
+			&& global::System.Collections.Generic.EqualityComparer<int>.Default.Equals(this.Age, other.Age);
 	}
 
 	public override bool Equals(object obj)
@@ -53,8 +55,8 @@ partial class Person : global::System.IEquatable<Person>
 		unchecked
 		{
 			int hashCode = EqualityContract.GetHashCode();
-			hashCode = hashCode * -1521134295 + global::System.Collections.Generic.EqualityComparer<string>.Default.GetHashCode(Name);
-			hashCode = hashCode * -1521134295 + global::System.Collections.Generic.EqualityComparer<int>.Default.GetHashCode(Age);
+			hashCode = hashCode * -1521134295 + global::System.Collections.Generic.EqualityComparer<string>.Default.GetHashCode(this.Name);
+			hashCode = hashCode * -1521134295 + global::System.Collections.Generic.EqualityComparer<int>.Default.GetHashCode(this.Age);
 			return hashCode;
 		}
 	}

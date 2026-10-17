@@ -11,13 +11,14 @@ partial record RecordTest : global::System.IEquatable<RecordTest>
 	{
 		global::System.Runtime.CompilerServices.RuntimeHelpers.EnsureSufficientExecutionStack();
 		builder.Append("IgnoreEquality = ");
-		builder.Append(IgnoreEquality.ToString());
+		builder.Append(this.IgnoreEquality.ToString());
 		return true;
 	}
 
 	public virtual bool Equals(RecordTest other)
 	{
-		return (object)other != null && EqualityContract == other.EqualityContract && global::System.Collections.Generic.EqualityComparer<string>.Default.Equals(IgnoreToString, other.IgnoreToString);
+		return (object)other != null && EqualityContract == other.EqualityContract
+			&& global::System.Collections.Generic.EqualityComparer<string>.Default.Equals(this.IgnoreToString, other.IgnoreToString);
 	}
 
 	public override int GetHashCode()
@@ -25,7 +26,7 @@ partial record RecordTest : global::System.IEquatable<RecordTest>
 		unchecked
 		{
 			int hashCode = EqualityContract.GetHashCode();
-			hashCode = hashCode * -1521134295 + global::System.Collections.Generic.EqualityComparer<string>.Default.GetHashCode(IgnoreToString);
+			hashCode = hashCode * -1521134295 + global::System.Collections.Generic.EqualityComparer<string>.Default.GetHashCode(this.IgnoreToString);
 			return hashCode;
 		}
 	}

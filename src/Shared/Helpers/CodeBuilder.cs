@@ -17,6 +17,7 @@ internal partial class CodeBuilder
     public CodeBuilder DecreaseIndent() { if (_indent > 0) _indent--; return this; }
 
     public CodeBuilder Append(bool value) { _stringBuilder.Append(value ? "true" : "false"); return this; }
+    public CodeBuilder Append(char value) { _stringBuilder.Append(value); return this; }
     public CodeBuilder Append(string value) { _stringBuilder.Append(value); return this; }
 
     public CodeBuilder AppendLine() { _stringBuilder.AppendLine(); return this; }

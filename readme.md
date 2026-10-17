@@ -85,15 +85,17 @@ partial class Person : global::System.IEquatable<Person>
 	{
 		global::System.Runtime.CompilerServices.RuntimeHelpers.EnsureSufficientExecutionStack();
 		builder.Append("Name = ");
-		builder.Append((object)Name);
+		builder.Append((object)this.Name);
 		builder.Append(", Age = ");
-		builder.Append(Age.ToString());
+		builder.Append(this.Age.ToString());
 		return true;
 	}
 
 	public virtual bool Equals(Person other)
 	{
-		return (object)other != null && EqualityContract == other.EqualityContract && global::System.Collections.Generic.EqualityComparer<string>.Default.Equals(Name, other.Name) && global::System.Collections.Generic.EqualityComparer<int>.Default.Equals(Age, other.Age);
+		return (object)other != null && EqualityContract == other.EqualityContract				&& global::System.Collections.Generic.EqualityComparer<string>.Default.Equals(this.Name, other.Name)
+				&& global::System.Collections.Generic.EqualityComparer<int>.Default.Equals(this.Age, other.Age)
+;
 	}
 
 	public override bool Equals(object obj)
@@ -106,8 +108,8 @@ partial class Person : global::System.IEquatable<Person>
 		unchecked
 		{
 			int hashCode = EqualityContract.GetHashCode();
-			hashCode = hashCode * -1521134295 + global::System.Collections.Generic.EqualityComparer<string>.Default.GetHashCode(Name);
-			hashCode = hashCode * -1521134295 + global::System.Collections.Generic.EqualityComparer<int>.Default.GetHashCode(Age);
+			hashCode = hashCode * -1521134295 + global::System.Collections.Generic.EqualityComparer<string>.Default.GetHashCode(this.Name);
+			hashCode = hashCode * -1521134295 + global::System.Collections.Generic.EqualityComparer<int>.Default.GetHashCode(this.Age);
 			return hashCode;
 		}
 	}
@@ -123,7 +125,7 @@ partial class Person : global::System.IEquatable<Person>
 	}
 }
 ```
-<sup><a href='/src/Tests/ReadmeExamples/Person.cs%23Person.g.verified.cs#L1-L71' title='Snippet source file'>snippet source</a> | <a href='#snippet-Person.cs#Person.g.verified.cs' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Tests/ReadmeExamples/Person.cs%23Person.g.verified.cs#L1-L73' title='Snippet source file'>snippet source</a> | <a href='#snippet-Person.cs#Person.g.verified.cs' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 </details>

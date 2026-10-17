@@ -32,15 +32,17 @@ partial class SealedClassTest : global::System.IEquatable<SealedClassTest>
 	{
 		global::System.Runtime.CompilerServices.RuntimeHelpers.EnsureSufficientExecutionStack();
 		builder.Append("Number = ");
-		builder.Append(Number.ToString());
+		builder.Append(this.Number.ToString());
 		builder.Append(", Text = ");
-		builder.Append((object)Text);
+		builder.Append((object)this.Text);
 		return true;
 	}
 
 	public bool Equals(SealedClassTest other)
 	{
-		return (object)other != null && EqualityContract == other.EqualityContract && global::System.Collections.Generic.EqualityComparer<int>.Default.Equals(Number, other.Number) && global::System.Collections.Generic.EqualityComparer<string>.Default.Equals(Text, other.Text);
+		return (object)other != null && EqualityContract == other.EqualityContract
+			&& global::System.Collections.Generic.EqualityComparer<int>.Default.Equals(this.Number, other.Number)
+			&& global::System.Collections.Generic.EqualityComparer<string>.Default.Equals(this.Text, other.Text);
 	}
 
 	public override bool Equals(object obj)
@@ -53,8 +55,8 @@ partial class SealedClassTest : global::System.IEquatable<SealedClassTest>
 		unchecked
 		{
 			int hashCode = EqualityContract.GetHashCode();
-			hashCode = hashCode * -1521134295 + global::System.Collections.Generic.EqualityComparer<int>.Default.GetHashCode(Number);
-			hashCode = hashCode * -1521134295 + global::System.Collections.Generic.EqualityComparer<string>.Default.GetHashCode(Text);
+			hashCode = hashCode * -1521134295 + global::System.Collections.Generic.EqualityComparer<int>.Default.GetHashCode(this.Number);
+			hashCode = hashCode * -1521134295 + global::System.Collections.Generic.EqualityComparer<string>.Default.GetHashCode(this.Text);
 			return hashCode;
 		}
 	}

@@ -36,7 +36,7 @@ partial class Dog : global::System.IEquatable<Dog>
 			builder.Append(", ");
 		}
 		builder.Append("Breed = ");
-		builder.Append((object)Breed);
+		builder.Append((object)this.Breed);
 		return true;
 	}
 
@@ -47,7 +47,7 @@ partial class Dog : global::System.IEquatable<Dog>
 
 	public virtual bool Equals(Dog other)
 	{
-		return base.Equals((global::Animal)other) && global::System.Collections.Generic.EqualityComparer<string>.Default.Equals(Breed, other.Breed);
+		return base.Equals((global::Animal)other) && global::System.Collections.Generic.EqualityComparer<string>.Default.Equals(this.Breed, other.Breed);
 	}
 
 	public override bool Equals(object obj)
@@ -61,7 +61,7 @@ partial class Dog : global::System.IEquatable<Dog>
 		{
 			int hashCode = EqualityContract.GetHashCode();
 			hashCode = hashCode * -1521134295 + base.GetHashCode();
-			hashCode = hashCode * -1521134295 + global::System.Collections.Generic.EqualityComparer<string>.Default.GetHashCode(Breed);
+			hashCode = hashCode * -1521134295 + global::System.Collections.Generic.EqualityComparer<string>.Default.GetHashCode(this.Breed);
 			return hashCode;
 		}
 	}

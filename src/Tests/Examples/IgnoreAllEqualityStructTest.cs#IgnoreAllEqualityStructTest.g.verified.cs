@@ -23,9 +23,9 @@ partial struct IgnoreAllEqualityStructTest : global::System.IEquatable<IgnoreAll
 	private readonly bool PrintMembers(global::System.Text.StringBuilder builder)
 	{
 		builder.Append("Value = ");
-		builder.Append(Value.ToString());
+		builder.Append(this.Value.ToString());
 		builder.Append(", Text = ");
-		builder.Append((object)Text);
+		builder.Append((object)this.Text);
 		return true;
 	}
 

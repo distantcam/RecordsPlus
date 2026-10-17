@@ -23,15 +23,15 @@ partial struct ReadonlyStructTest : global::System.IEquatable<ReadonlyStructTest
 	private bool PrintMembers(global::System.Text.StringBuilder builder)
 	{
 		builder.Append("Number = ");
-		builder.Append(Number.ToString());
+		builder.Append(this.Number.ToString());
 		builder.Append(", Text = ");
-		builder.Append((object)Text);
+		builder.Append((object)this.Text);
 		return true;
 	}
 
 	public bool Equals(ReadonlyStructTest other)
 	{
-		return global::System.Collections.Generic.EqualityComparer<int>.Default.Equals(Number, other.Number) && global::System.Collections.Generic.EqualityComparer<string>.Default.Equals(Text, other.Text);
+		return global::System.Collections.Generic.EqualityComparer<int>.Default.Equals(this.Number, other.Number) && global::System.Collections.Generic.EqualityComparer<string>.Default.Equals(this.Text, other.Text);
 	}
 
 	public override bool Equals(object obj)
@@ -44,8 +44,8 @@ partial struct ReadonlyStructTest : global::System.IEquatable<ReadonlyStructTest
 		unchecked
 		{
 			int hashCode = 0;
-			hashCode = hashCode * -1521134295 + global::System.Collections.Generic.EqualityComparer<int>.Default.GetHashCode(Number);
-			hashCode = hashCode * -1521134295 + global::System.Collections.Generic.EqualityComparer<string>.Default.GetHashCode(Text);
+			hashCode = hashCode * -1521134295 + global::System.Collections.Generic.EqualityComparer<int>.Default.GetHashCode(this.Number);
+			hashCode = hashCode * -1521134295 + global::System.Collections.Generic.EqualityComparer<string>.Default.GetHashCode(this.Text);
 			return hashCode;
 		}
 	}

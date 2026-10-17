@@ -63,7 +63,7 @@ public partial class RecordsPlusSourceGenerator
                     if (!first)
                         source.Append(" && ");
                     first = false;
-                    source.Append($"{EqualityComparer(member)}.Equals({member.Name}, other.{member.Name})");
+                    source.Append($"{EqualityComparer(member)}.Equals({Self(member)}, {Other(member)})");
                 }
                 source.Append(";").AppendLine();
             }

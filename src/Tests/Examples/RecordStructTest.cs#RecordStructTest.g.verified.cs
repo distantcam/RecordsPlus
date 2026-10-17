@@ -10,13 +10,13 @@ partial record struct RecordStructTest : global::System.IEquatable<RecordStructT
 	private readonly bool PrintMembers(global::System.Text.StringBuilder builder)
 	{
 		builder.Append("IgnoreEquality = ");
-		builder.Append(IgnoreEquality.ToString());
+		builder.Append(this.IgnoreEquality.ToString());
 		return true;
 	}
 
 	public readonly bool Equals(RecordStructTest other)
 	{
-		return global::System.Collections.Generic.EqualityComparer<string>.Default.Equals(IgnoreToString, other.IgnoreToString);
+		return global::System.Collections.Generic.EqualityComparer<string>.Default.Equals(this.IgnoreToString, other.IgnoreToString);
 	}
 
 	public override readonly int GetHashCode()
@@ -24,7 +24,7 @@ partial record struct RecordStructTest : global::System.IEquatable<RecordStructT
 		unchecked
 		{
 			int hashCode = 0;
-			hashCode = hashCode * -1521134295 + global::System.Collections.Generic.EqualityComparer<string>.Default.GetHashCode(IgnoreToString);
+			hashCode = hashCode * -1521134295 + global::System.Collections.Generic.EqualityComparer<string>.Default.GetHashCode(this.IgnoreToString);
 			return hashCode;
 		}
 	}

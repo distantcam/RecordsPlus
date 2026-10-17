@@ -32,17 +32,20 @@ partial class ClassTest : global::System.IEquatable<ClassTest>
 	{
 		global::System.Runtime.CompilerServices.RuntimeHelpers.EnsureSufficientExecutionStack();
 		builder.Append("Value = ");
-		builder.Append(Value.ToString());
+		builder.Append(this.Value.ToString());
 		builder.Append(", Number = ");
-		builder.Append(Number.ToString());
+		builder.Append(this.Number.ToString());
 		builder.Append(", Text = ");
-		builder.Append((object)Text);
+		builder.Append((object)this.Text);
 		return true;
 	}
 
 	public virtual bool Equals(ClassTest other)
 	{
-		return (object)other != null && EqualityContract == other.EqualityContract && global::System.Collections.Generic.EqualityComparer<int>.Default.Equals(Value, other.Value) && global::System.Collections.Generic.EqualityComparer<int>.Default.Equals(Number, other.Number) && global::System.Collections.Generic.EqualityComparer<string>.Default.Equals(Text, other.Text);
+		return (object)other != null && EqualityContract == other.EqualityContract
+			&& global::System.Collections.Generic.EqualityComparer<int>.Default.Equals(this.Value, other.Value)
+			&& global::System.Collections.Generic.EqualityComparer<int>.Default.Equals(this.Number, other.Number)
+			&& global::System.Collections.Generic.EqualityComparer<string>.Default.Equals(this.Text, other.Text);
 	}
 
 	public override bool Equals(object obj)
@@ -55,9 +58,9 @@ partial class ClassTest : global::System.IEquatable<ClassTest>
 		unchecked
 		{
 			int hashCode = EqualityContract.GetHashCode();
-			hashCode = hashCode * -1521134295 + global::System.Collections.Generic.EqualityComparer<int>.Default.GetHashCode(Value);
-			hashCode = hashCode * -1521134295 + global::System.Collections.Generic.EqualityComparer<int>.Default.GetHashCode(Number);
-			hashCode = hashCode * -1521134295 + global::System.Collections.Generic.EqualityComparer<string>.Default.GetHashCode(Text);
+			hashCode = hashCode * -1521134295 + global::System.Collections.Generic.EqualityComparer<int>.Default.GetHashCode(this.Value);
+			hashCode = hashCode * -1521134295 + global::System.Collections.Generic.EqualityComparer<int>.Default.GetHashCode(this.Number);
+			hashCode = hashCode * -1521134295 + global::System.Collections.Generic.EqualityComparer<string>.Default.GetHashCode(this.Text);
 			return hashCode;
 		}
 	}

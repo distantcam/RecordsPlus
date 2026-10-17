@@ -32,13 +32,14 @@ partial class Animal : global::System.IEquatable<Animal>
 	{
 		global::System.Runtime.CompilerServices.RuntimeHelpers.EnsureSufficientExecutionStack();
 		builder.Append("Name = ");
-		builder.Append((object)Name);
+		builder.Append((object)this.Name);
 		return true;
 	}
 
 	public virtual bool Equals(Animal other)
 	{
-		return (object)other != null && EqualityContract == other.EqualityContract && global::System.Collections.Generic.EqualityComparer<string>.Default.Equals(Name, other.Name);
+		return (object)other != null && EqualityContract == other.EqualityContract
+			&& global::System.Collections.Generic.EqualityComparer<string>.Default.Equals(this.Name, other.Name);
 	}
 
 	public override bool Equals(object obj)
@@ -51,7 +52,7 @@ partial class Animal : global::System.IEquatable<Animal>
 		unchecked
 		{
 			int hashCode = EqualityContract.GetHashCode();
-			hashCode = hashCode * -1521134295 + global::System.Collections.Generic.EqualityComparer<string>.Default.GetHashCode(Name);
+			hashCode = hashCode * -1521134295 + global::System.Collections.Generic.EqualityComparer<string>.Default.GetHashCode(this.Name);
 			return hashCode;
 		}
 	}

@@ -79,6 +79,65 @@ internal sealed class GeneratedBehaviorTests
             .ConfigureAwait(false);
     }
 
+    [Test]
+    [CombinedDataSources]
+    public async Task ToStringPrintsMembersThatShadowGeneratedLocals(
+        [ClassDataSource<ExampleTests.CompilationBuilderFactory>(Shared = SharedType.PerTestSession)] ExampleTests.CompilationBuilderFactory builderFactory)
+    {
+        var instance = CreateInstance(builderFactory, "ShadowedMemberNamesTest", "ShadowedMemberNamesTest",
+            ("builder", "b"), ("other", "o"), ("hashCode", 7));
+
+        await Assert.That(instance.ToString())
+            .IsEqualTo("ShadowedMemberNamesTest { builder = b, other = o, hashCode = 7 }")
+            .ConfigureAwait(false);
+    }
+
+    [Test]
+    [CombinedDataSources]
+    public async Task EqualityUsesMembersThatShadowGeneratedLocals(
+        [ClassDataSource<ExampleTests.CompilationBuilderFactory>(Shared = SharedType.PerTestSession)] ExampleTests.CompilationBuilderFactory builderFactory)
+    {
+        var assembly = Emit(builderFactory, "ShadowedMemberNamesTest");
+        var baseline = CreateInstance(assembly, "ShadowedMemberNamesTest",
+            ("builder", "b"), ("other", "o"), ("hashCode", 7));
+        var same = CreateInstance(assembly, "ShadowedMemberNamesTest",
+            ("builder", "b"), ("other", "o"), ("hashCode", 7));
+        var differentOther = CreateInstance(assembly, "ShadowedMemberNamesTest",
+            ("builder", "b"), ("other", "different"), ("hashCode", 7));
+        var differentHashCode = CreateInstance(assembly, "ShadowedMemberNamesTest",
+            ("builder", "b"), ("other", "o"), ("hashCode", 8));
+
+        using var _ = Assert.Multiple();
+
+        await Assert.That(baseline.Equals(same)).IsTrue().ConfigureAwait(false);
+        await Assert.That(baseline.GetHashCode()).IsEqualTo(same.GetHashCode()).ConfigureAwait(false);
+        await Assert.That(baseline.Equals(differentOther)).IsFalse().ConfigureAwait(false);
+        await Assert.That(baseline.Equals(differentHashCode)).IsFalse().ConfigureAwait(false);
+        await Assert.That(baseline.GetHashCode()).IsNotEqualTo(differentHashCode.GetHashCode())
+            .ConfigureAwait(false);
+    }
+
+    [Test]
+    [CombinedDataSources]
+    public async Task InheritanceThroughAnUnmarkedBaseStillChains(
+        [ClassDataSource<ExampleTests.CompilationBuilderFactory>(Shared = SharedType.PerTestSession)] ExampleTests.CompilationBuilderFactory builderFactory)
+    {
+        var assembly = Emit(builderFactory, "DeepInheritanceTest");
+        var baseline = CreateInstance(assembly, "DeepLeaf", ("A", 1), ("B", 2), ("C", 3));
+        var same = CreateInstance(assembly, "DeepLeaf", ("A", 1), ("B", 2), ("C", 3));
+        var differentInherited = CreateInstance(assembly, "DeepLeaf", ("A", 9), ("B", 2), ("C", 3));
+        // DeepMiddle isn't marked, so B takes no part in equality or ToString.
+        var differentUnmarked = CreateInstance(assembly, "DeepLeaf", ("A", 1), ("B", 9), ("C", 3));
+
+        using var _ = Assert.Multiple();
+
+        await Assert.That(baseline.ToString()).IsEqualTo("DeepLeaf { A = 1, C = 3 }")
+            .ConfigureAwait(false);
+        await Assert.That(baseline.Equals(same)).IsTrue().ConfigureAwait(false);
+        await Assert.That(baseline.Equals(differentInherited)).IsFalse().ConfigureAwait(false);
+        await Assert.That(baseline.Equals(differentUnmarked)).IsTrue().ConfigureAwait(false);
+    }
+
     // ----------------------------------------------------------------------------------------
 
     private static object CreateInstance(
@@ -86,8 +145,13 @@ internal sealed class GeneratedBehaviorTests
         string exampleName,
         string typeName,
         params (string Name, object Value)[] members)
+        => CreateInstance(Emit(builderFactory, exampleName), typeName, members);
+
+    private static object CreateInstance(
+        System.Reflection.Assembly assembly,
+        string typeName,
+        params (string Name, object Value)[] members)
     {
-        var assembly = Emit(builderFactory, exampleName);
         var type = assembly.GetType(typeName)
             ?? throw new InvalidOperationException($"'{typeName}' missing from the generated assembly.");
         var instance = Activator.CreateInstance(type)
