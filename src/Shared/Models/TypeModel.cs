@@ -123,12 +123,7 @@ internal sealed record TypeModel(
     // Formatting the type to a `global::` string just to compare it allocates one string per
     // candidate member, for every base in the chain. The symbol shape says the same thing.
     private static bool IsSystemType(ITypeSymbol type)
-        => type is INamedTypeSymbol
-        {
-            Name: "Type",
-            ContainingType: null,
-            ContainingNamespace: { Name: "System", ContainingNamespace.IsGlobalNamespace: true }
-        };
+        => GeneratorUtilities.IsType(type, "System", "Type");
 
     private static bool IsStringBuilder(ITypeSymbol type)
         => type is INamedTypeSymbol

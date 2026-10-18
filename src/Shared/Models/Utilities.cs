@@ -6,10 +6,10 @@ internal static class Utilities
     // attribute examined, and that is paid for every member of every type and every base in
     // the chain, so match the name and namespace in place instead.
     public static bool IsRecordAttribute(INamedTypeSymbol? attributeClass)
-        => GeneratorUtilities.IsAttribute(attributeClass, AttributeNames.Namespace, AttributeNames.RecordName);
+        => GeneratorUtilities.IsType(attributeClass, AttributeNames.Namespace, AttributeNames.RecordName);
 
     public static bool IsRecordIgnoreAttribute(INamedTypeSymbol? attributeClass)
-        => GeneratorUtilities.IsAttribute(attributeClass, AttributeNames.Namespace, AttributeNames.RecordIgnoreName);
+        => GeneratorUtilities.IsType(attributeClass, AttributeNames.Namespace, AttributeNames.RecordIgnoreName);
 
     public static bool HasRecordAttribute(ISymbol? symbol)
     {

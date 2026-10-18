@@ -91,8 +91,8 @@ internal static class GeneratorUtilities
         return symbol?.GetAttributes().Any(a => a.AttributeClass?.ToDisplayString() == attributeName) == true;
     }
 
-    public static bool IsAttribute(INamedTypeSymbol? attributeClass, string ns, string name)
-        => attributeClass is
+    public static bool IsType(ITypeSymbol? type, string ns, string name)
+        => type is
         {
             ContainingType: null,
             ContainingNamespace:
@@ -100,6 +100,6 @@ internal static class GeneratorUtilities
                 ContainingNamespace.IsGlobalNamespace: true
             }
         }
-        && attributeClass.ContainingNamespace.Name == ns
-        && attributeClass.Name == name;
+        && type.ContainingNamespace.Name == ns
+        && type.Name == name;
 }
