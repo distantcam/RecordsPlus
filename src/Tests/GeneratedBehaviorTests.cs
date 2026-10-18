@@ -138,6 +138,27 @@ internal sealed class GeneratedBehaviorTests
         await Assert.That(baseline.Equals(differentUnmarked)).IsTrue().ConfigureAwait(false);
     }
 
+    [Test]
+    [CombinedDataSources]
+    public async Task RecordIgnoreAppliesWithoutTheRecordAttribute(
+        [ClassDataSource<ExampleTests.CompilationBuilderFactory>(Shared = SharedType.PerTestSession)] ExampleTests.CompilationBuilderFactory builderFactory)
+    {
+        var assembly = Emit(builderFactory, "RecordWithoutAttributeTest");
+        var baseline = CreateInstance(assembly, "RecordWithoutAttributeTest",
+            ("IgnoreEquality", 42), ("IgnoreToString", "hello"));
+        var differentIgnoredMember = CreateInstance(assembly, "RecordWithoutAttributeTest",
+            ("IgnoreEquality", 99), ("IgnoreToString", "hello"));
+
+        using var _ = Assert.Multiple();
+
+        // The compiler's own record ToString calls the generated PrintMembers, so the member
+        // ignored for ToString drops out even though nothing marked the type.
+        await Assert.That(baseline.ToString())
+            .IsEqualTo("RecordWithoutAttributeTest { IgnoreEquality = 42 }")
+            .ConfigureAwait(false);
+        await Assert.That(baseline.Equals(differentIgnoredMember)).IsTrue().ConfigureAwait(false);
+    }
+
     // ----------------------------------------------------------------------------------------
 
     private static object CreateInstance(

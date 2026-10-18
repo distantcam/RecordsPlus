@@ -6,12 +6,20 @@ public sealed partial class RecordsPlusSourceGenerator : IIncrementalGenerator
 {
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
-        var types = context.SyntaxProvider.ForAttributeWithMetadataName(
+        var markedTypes = context.SyntaxProvider.ForAttributeWithMetadataName(
             AttributeNames.Record,
             GeneratorUtilities.IsTypeDeclarationWithAttributes,
-            static (c, ct) => TypeModel.Create((INamedTypeSymbol)c.TargetSymbol))
+            static (c, _) => TypeModel.Create((INamedTypeSymbol)c.TargetSymbol))
             .WithTrackingName(TrackingNames.TypeModels);
 
-        context.RegisterSourceOutput(types, Emitter.GenerateSource);
+        var unmarkedRecords = context.SyntaxProvider.CreateSyntaxProvider(
+            GeneratorUtilities.IsRecordDeclaration,
+            Utilities.GetUnmarkedRecord)
+            .Where(static x => x is not null)
+            .Select(static (x, _) => TypeModel.Create(x!))
+            .WithTrackingName(TrackingNames.UnmarkedRecordModels);
+
+        context.RegisterSourceOutput(markedTypes, Emitter.GenerateSource);
+        context.RegisterSourceOutput(unmarkedRecords, Emitter.GenerateSource);
     }
 }

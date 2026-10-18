@@ -19,6 +19,13 @@ public sealed partial class RecordsPlusSourceGenerator : ISourceGenerator
             {
                 (TypeModels ??= []).Add(TypeModel.Create(type));
             }
+
+            if (GeneratorUtilities.IsRecordDeclaration(context.Node, cancellationToken)
+
+                && (type = Utilities.GetUnmarkedRecord(context, cancellationToken)) != null)
+            {
+                (TypeModels ??= []).Add(TypeModel.Create(type));
+            }
         }
     }
 

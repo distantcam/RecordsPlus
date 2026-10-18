@@ -8,9 +8,11 @@ public partial class RecordsPlusSourceGenerator
     public static class TrackingNames
     {
         public static string TypeModels => nameof(TypeModels);
+        public static string UnmarkedRecordModels => nameof(UnmarkedRecordModels);
 
         public static IReadOnlyCollection<string> AllTrackers { get; } = [
             TypeModels,
+            UnmarkedRecordModels,
         ];
     }
 }

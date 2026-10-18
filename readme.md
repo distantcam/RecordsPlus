@@ -93,9 +93,9 @@ partial class Person : global::System.IEquatable<Person>
 
 	public virtual bool Equals(Person other)
 	{
-		return (object)other != null && EqualityContract == other.EqualityContract				&& global::System.Collections.Generic.EqualityComparer<string>.Default.Equals(this.Name, other.Name)
-				&& global::System.Collections.Generic.EqualityComparer<int>.Default.Equals(this.Age, other.Age)
-;
+		return (object)other != null && EqualityContract == other.EqualityContract
+			&& global::System.Collections.Generic.EqualityComparer<string>.Default.Equals(this.Name, other.Name)
+			&& global::System.Collections.Generic.EqualityComparer<int>.Default.Equals(this.Age, other.Age);
 	}
 
 	public override bool Equals(object obj)

@@ -1,0 +1,36 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <IsPackable>false</IsPackable>
+    <AnalysisMode>default</AnalysisMode>
+    <NoWarn>NU1902;NU1903</NoWarn>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <RecordsPlusVersion Condition="'$(RecordsPlusVersion)' == ''">local</RecordsPlusVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="BenchmarkDotNet" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.SourceGenerators.Testing" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(RecordsPlusVersion)' == 'local'">
+    <ProjectReference Include="..\RecordsPlus.Attributes\RecordsPlus.Attributes.csproj" />
+    <ProjectReference Include="..\RecordsPlus.Roslyn4.4\RecordsPlus.Roslyn4.4.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(RecordsPlusVersion)' != 'local'">
+    <PackageReference Include="RecordsPlus" VersionOverride="$(RecordsPlusVersion)" GeneratePathProperty="true" ExcludeAssets="analyzers" />
+    <Reference Include="$(PkgRecordsPlus)\analyzers\dotnet\roslyn4.4\cs\RecordsPlus.dll" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="BenchmarkDotNet.Artifacts\results\" />
+  </ItemGroup>
+
+</Project>

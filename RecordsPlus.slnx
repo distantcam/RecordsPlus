@@ -25,6 +25,7 @@
     <File Path="src/nugetfiles/RecordsPlus.props" />
     <File Path="src/nugetfiles/RecordsPlus.targets" />
   </Folder>
+  <Project Path="src/CompileBenchmarks/CompileBenchmarks.csproj" Id="34463929-82fc-41b8-a962-1a4156abef8c" />
   <Project Path="src/RecordsPlus.Attributes/RecordsPlus.Attributes.csproj" />
   <Project Path="src/RecordsPlus.Roslyn3.11/RecordsPlus.Roslyn3.11.csproj" />
   <Project Path="src/RecordsPlus.Roslyn4.0/RecordsPlus.Roslyn4.0.csproj" />

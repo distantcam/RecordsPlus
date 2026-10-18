@@ -66,6 +66,9 @@ internal static class GeneratorUtilities
     public static bool IsTypeDeclarationWithAttributes(SyntaxNode node, CancellationToken cancellationToken)
         => node is TypeDeclarationSyntax { AttributeLists.Count: > 0 };
 
+    public static bool IsRecordDeclaration(SyntaxNode node, CancellationToken cancellationToken)
+        => node is RecordDeclarationSyntax;
+
     public static bool IsMethodDeclarationWithAttributes(SyntaxNode node, CancellationToken cancellationToken)
         => node is MethodDeclarationSyntax { AttributeLists.Count: > 0 };
 
