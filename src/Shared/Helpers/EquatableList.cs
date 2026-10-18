@@ -6,16 +6,20 @@ using System.Diagnostics;
 [DebuggerDisplay("Count = {Count}")]
 internal readonly struct EquatableList<T> : IEquatable<EquatableList<T>>, IReadOnlyList<T>
 {
-    private readonly IEqualityComparer<T> _equalityComparer;
     private readonly ImmutableArray<T> _data = ImmutableArray<T>.Empty;
     private readonly int _hash = 0;
 
-    public EquatableList(IEnumerable<T> data, IEqualityComparer<T>? equalityComparer = null)
+    public EquatableList(IEnumerable<T> data) : this(data.ToImmutableArray())
     {
-        _equalityComparer = equalityComparer ?? EqualityComparer<T>.Default;
-        _data = data.ToImmutableArray();
+    }
+
+    // Taking the array itself lets a caller that already knows the count hand over a
+    // right-sized one instead of having it rebuilt through IEnumerable.
+    public EquatableList(ImmutableArray<T> data)
+    {
+        _data = data;
         for (var i = 0; i < _data.Length; i++)
-            _hash = _hash * 0x29_55_55_A5 + _equalityComparer.GetHashCode(_data[i]);
+            _hash = _hash * 0x29_55_55_A5 + EqualityComparer<T>.Default.GetHashCode(_data[i]);
     }
 
     public bool Equals(EquatableList<T> other)
@@ -28,7 +32,7 @@ internal readonly struct EquatableList<T> : IEquatable<EquatableList<T>>, IReadO
 
         for (var i = 0; i < _data.Length; i++)
         {
-            if (!_equalityComparer.Equals(_data[i], other._data[i]))
+            if (!EqualityComparer<T>.Default.Equals(_data[i], other._data[i]))
                 return false;
         }
 
