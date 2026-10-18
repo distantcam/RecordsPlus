@@ -10,21 +10,18 @@ public sealed partial class RecordsPlusSourceGenerator : ISourceGenerator
 
         public void OnVisitSyntaxNode(GeneratorSyntaxContext context)
         {
-            INamedTypeSymbol? type;
             if (GeneratorUtilities.IsTypeDeclarationWithAttributes(context.Node, cancellationToken)
 
-                && (type = GeneratorUtilities.GetSymbol<INamedTypeSymbol>(context, cancellationToken)) != null
-
-                && GeneratorUtilities.HasAttribute(type, AttributeNames.Record))
+                && Utilities.GetMarkedTypeModel(context, cancellationToken) is { } markedType)
             {
-                (TypeModels ??= []).Add(TypeModel.Create(type));
+                (TypeModels ??= []).Add(markedType);
             }
 
             if (GeneratorUtilities.IsRecordDeclaration(context.Node, cancellationToken)
 
-                && (type = Utilities.GetUnmarkedRecord(context, cancellationToken)) != null)
+                && Utilities.GetUnmarkedRecordModel(context, cancellationToken) is { } unmarkedRecord)
             {
-                (TypeModels ??= []).Add(TypeModel.Create(type));
+                (TypeModels ??= []).Add(unmarkedRecord);
             }
         }
     }

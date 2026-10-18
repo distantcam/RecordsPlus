@@ -6,7 +6,8 @@ using RecordsPlus;
 
 namespace CompileBenchmarks;
 
-[ShortRunJob]
+[MemoryDiagnoser]
+[MediumRunJob]
 public class Records
 {
     [Params(1000, 5000)]

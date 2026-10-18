@@ -1,6 +1,7 @@
-﻿using Microsoft.CodeAnalysis;
+﻿using System.Collections.Immutable;
+using Microsoft.CodeAnalysis;
 
-internal readonly record struct TypeModel(
+internal sealed record TypeModel(
     string? Namespace,
     EquatableList<string> TypeDeclarations,
 
@@ -21,15 +22,17 @@ internal readonly record struct TypeModel(
 {
     public static TypeModel Create(INamedTypeSymbol type)
     {
-        var members = type.GetMembers()
-            .Where(IsPrintable)
-            .Select(MemberModel.Create);
+        var typeMembers = type.GetMembers();
+        var members = ImmutableArray.CreateBuilder<MemberModel>(typeMembers.Length);
+        foreach (var member in typeMembers)
+        {
+            if (MemberModel.TryCreate(member, out var model))
+                members.Add(model);
+        }
 
         var qualifiedName = type.ToDisplayString(MinimallyQualifiedFormat);
 
-        var equalityContractBase = FindBaseDeclaring(type, DeclaresEqualityContract);
-        var printMembersBase = FindBaseDeclaring(type, DeclaresPrintMembers);
-        var equalsBase = FindBaseDeclaring(type, DeclaresOverridableEquals);
+        var (equalityContractBase, printMembersBase, equalsBase) = FindBases(type);
 
         return new(
             Namespace: GeneratorUtilities.GetNamespace(type),
@@ -47,88 +50,97 @@ internal readonly record struct TypeModel(
             BaseTypeHasPrintMember: printMembersBase is not null,
             BaseTypeHasEqualityContract: equalityContractBase is not null,
 
-            Members: new(members)
+            Members: new(members.ToImmutable())
         );
     }
 
     // The member can be declared anywhere up the chain - an unmarked base still inherits it -
     // so keep walking until it is found rather than only looking at the immediate base.
-    private static INamedTypeSymbol? FindBaseDeclaring(INamedTypeSymbol type, Func<INamedTypeSymbol, bool> declares)
+    // All three answers come out of one walk: the chain can be long and every base costs an
+    // attribute scan, so walking it once per answer tripled that cost.
+    private static (INamedTypeSymbol? EqualityContract, INamedTypeSymbol? PrintMembers, INamedTypeSymbol? EqualsBase) FindBases(INamedTypeSymbol type)
     {
+        INamedTypeSymbol? equalityContract = null;
+        INamedTypeSymbol? printMembers = null;
+        INamedTypeSymbol? equals = null;
+
         for (var baseType = type.BaseType; baseType is not null; baseType = baseType.BaseType)
         {
             // A base marked [Record] has these generated for it, but not until after this type
             // is modelled, so trust the attribute instead of looking the members up.
-            if (GeneratorUtilities.HasAttribute(baseType, AttributeNames.Record) || declares(baseType))
-                return baseType;
+            var marked = Utilities.HasRecordAttribute(baseType);
+
+            equalityContract ??= marked || DeclaresEqualityContract(baseType) ? baseType : null;
+            printMembers ??= marked || DeclaresPrintMembers(baseType) ? baseType : null;
+            equals ??= marked || DeclaresOverridableEquals(baseType) ? baseType : null;
+
+            if (equalityContract is not null && printMembers is not null && equals is not null)
+                break;
         }
-        return null;
+
+        return (equalityContract, printMembers, equals);
     }
 
     private static bool DeclaresEqualityContract(INamedTypeSymbol type)
-        => type.GetMembers("EqualityContract").OfType<IPropertySymbol>()
-            .Any(static s => s.GetMethod is not null
-                && s.Type.ToDisplayString(FullyQualifiedFormat) == "global::System.Type");
+    {
+        foreach (var member in type.GetMembers("EqualityContract"))
+        {
+            if (member is IPropertySymbol { GetMethod: not null } property
+                && IsSystemType(property.Type))
+                return true;
+        }
+        return false;
+    }
 
     // Without a base `Equals(Base)` to chain to, `base.Equals((Base)other)` would silently
     // bind to `object.Equals(object)` and compare by reference, so only chain when there is one.
     private static bool DeclaresOverridableEquals(INamedTypeSymbol type)
-        => type.SpecialType != SpecialType.System_Object // object.Equals(object) is not a chain
-        && type.GetMembers("Equals").OfType<IMethodSymbol>()
-            .Any(m => !m.IsSealed
-                && (m.IsVirtual || m.IsOverride || m.IsAbstract)
-                && m.Parameters.Length == 1
-                && SymbolEqualityComparer.Default.Equals(m.Parameters[0].Type, type));
-
-    private static bool DeclaresPrintMembers(INamedTypeSymbol type)
-        => type.GetMembers("PrintMembers").OfType<IMethodSymbol>()
-            .Any(static s => s.Parameters.Length == 1
-                && s.Parameters[0].Type.ToDisplayString(FullyQualifiedFormat) == "global::System.Text.StringBuilder");
-
-    private static bool IsPrintable(ISymbol m)
     {
-        if (!IsPublicInstanceMember(m))
-        {
+        if (type.SpecialType == SpecialType.System_Object) // object.Equals(object) is not a chain
             return false;
-        }
 
-        if (HasIgnored(m))
+        foreach (var member in type.GetMembers("Equals"))
         {
-            return false;
+            if (member is IMethodSymbol { IsSealed: false, Parameters.Length: 1 } method
+                && (method.IsVirtual || method.IsOverride || method.IsAbstract)
+                && SymbolEqualityComparer.Default.Equals(method.Parameters[0].Type, type))
+                return true;
         }
-
-        if (m.Kind is SymbolKind.Field)
-        {
-            return true;
-        }
-
-        if (m.Kind is SymbolKind.Property)
-        {
-            var property = (IPropertySymbol)m;
-            return IsPrintableProperty(property);
-        }
-
         return false;
     }
 
-    private static bool IsPublicInstanceMember(ISymbol m)
+    private static bool DeclaresPrintMembers(INamedTypeSymbol type)
     {
-        return m.DeclaredAccessibility == Accessibility.Public && !m.IsStatic;
+        foreach (var member in type.GetMembers("PrintMembers"))
+        {
+            if (member is IMethodSymbol { Parameters.Length: 1 } method
+                && IsStringBuilder(method.Parameters[0].Type))
+                return true;
+        }
+        return false;
     }
 
-    private static bool IsPrintableProperty(IPropertySymbol property)
-    {
-        return !property.IsIndexer && !property.IsOverride && property.GetMethod is not null;
-    }
+    // Formatting the type to a `global::` string just to compare it allocates one string per
+    // candidate member, for every base in the chain. The symbol shape says the same thing.
+    private static bool IsSystemType(ITypeSymbol type)
+        => type is INamedTypeSymbol
+        {
+            Name: "Type",
+            ContainingType: null,
+            ContainingNamespace: { Name: "System", ContainingNamespace.IsGlobalNamespace: true }
+        };
 
-    private static bool HasIgnored(ISymbol symbol)
-    {
-        var ignoreAttribute = symbol.GetAttributes()
-            .FirstOrDefault(static a => a.AttributeClass?.ToDisplayString()
-            == AttributeNames.RecordIgnore);
-        var ignoreValue = (int?)ignoreAttribute?.ConstructorArguments[0].Value;
-        return ignoreValue == 3;
-    }
+    private static bool IsStringBuilder(ITypeSymbol type)
+        => type is INamedTypeSymbol
+        {
+            Name: "StringBuilder",
+            ContainingType: null,
+            ContainingNamespace:
+            {
+                Name: "Text",
+                ContainingNamespace: { Name: "System", ContainingNamespace.IsGlobalNamespace: true }
+            }
+        };
 }
 
 internal readonly record struct MemberModel(
@@ -140,27 +152,60 @@ internal readonly record struct MemberModel(
     string TypeName
 )
 {
-    public static MemberModel Create(ISymbol member)
+    public static bool TryCreate(ISymbol member, out MemberModel model)
     {
-        var ignoreAttribute = member.GetAttributes()
-            .FirstOrDefault(static a => a.AttributeClass?.ToDisplayString()
-            == AttributeNames.RecordIgnore);
-        var ignoreValue = (int?)ignoreAttribute?.ConstructorArguments[0].Value ?? 0;
+        model = default;
 
-        var type = member.Kind switch
+        if (member.DeclaredAccessibility != Accessibility.Public || member.IsStatic)
+            return false;
+
+        ITypeSymbol type;
+        switch (member.Kind)
         {
-            SymbolKind.Field => ((IFieldSymbol)member).Type,
-            SymbolKind.Property => ((IPropertySymbol)member).Type,
-            _ => throw new InvalidOperationException($"Unexpected symbol kind: {member.Kind}")
-        };
+            case SymbolKind.Field:
+                type = ((IFieldSymbol)member).Type;
+                break;
 
-        return new(
+            case SymbolKind.Property:
+                var property = (IPropertySymbol)member;
+                if (property.IsIndexer || property.IsOverride || property.GetMethod is null)
+                    return false;
+                type = property.Type;
+                break;
+
+            default:
+                return false;
+        }
+
+        // The ignore setting both drops the member entirely (IgnoreSetting.All) and supplies the
+        // per-feature flags, so read it once instead of scanning the attributes a second time.
+        var ignore = GetIgnoreSetting(member);
+        if (ignore == 3) // IgnoreSetting.All
+            return false;
+
+        model = new(
             Name: member.Name,
             Kind: member.Kind,
             IsValueType: type.IsValueType,
-            IgnoreEquality: (ignoreValue & 1) != 0, // IgnoreSetting.Equality
-            IgnoreToString: (ignoreValue & 2) != 0, // IgnoreSetting.ToString
+            IgnoreEquality: (ignore & 1) != 0, // IgnoreSetting.Equality
+            IgnoreToString: (ignore & 2) != 0, // IgnoreSetting.ToString
             TypeName: type.ToDisplayString(FullyQualifiedFormat)
         );
+        return true;
+    }
+
+    private static int GetIgnoreSetting(ISymbol member)
+    {
+        foreach (var attribute in member.GetAttributes())
+        {
+            if (!Utilities.IsRecordIgnoreAttribute(attribute.AttributeClass))
+                continue;
+
+            // Half-typed code in the IDE can leave the argument off entirely.
+            return attribute.ConstructorArguments.Length > 0
+                ? (int?)attribute.ConstructorArguments[0].Value ?? 0
+                : 0;
+        }
+        return 0;
     }
 }

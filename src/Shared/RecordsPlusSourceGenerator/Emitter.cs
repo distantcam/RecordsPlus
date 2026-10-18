@@ -14,6 +14,14 @@ public partial class RecordsPlusSourceGenerator
 {
     private static partial class Emitter
     {
+        // Filtering the empty ones out with Where/Select would add two more state tables,
+        // each holding copies of this struct, so let the output stage skip them instead.
+        public static void GenerateSourceIfPresent(EmitterContext context, TypeModel? type)
+        {
+            if (type is not null)
+                GenerateSource(context, type);
+        }
+
         public static void GenerateSource(EmitterContext context, TypeModel type)
         {
             var source = new CodeBuilder()

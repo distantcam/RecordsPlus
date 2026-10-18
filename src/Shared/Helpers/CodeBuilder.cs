@@ -21,7 +21,7 @@ internal partial class CodeBuilder
     public CodeBuilder Append(string value) { _stringBuilder.Append(value); return this; }
 
     public CodeBuilder AppendLine() { _stringBuilder.AppendLine(); return this; }
-    public CodeBuilder AppendLine(string value) => AppendLineRaw(Indent + value);
+    public CodeBuilder AppendLine(string value) { _stringBuilder.Append(Indent).AppendLine(value); return this; }
 
     public CodeBuilder AppendLineRaw(string value) { _stringBuilder.AppendLine(value); return this; }
 

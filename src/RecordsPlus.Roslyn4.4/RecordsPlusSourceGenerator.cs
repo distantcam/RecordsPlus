@@ -14,12 +14,10 @@ public sealed partial class RecordsPlusSourceGenerator : IIncrementalGenerator
 
         var unmarkedRecords = context.SyntaxProvider.CreateSyntaxProvider(
             GeneratorUtilities.IsRecordDeclaration,
-            Utilities.GetUnmarkedRecord)
-            .Where(static x => x is not null)
-            .Select(static (x, _) => TypeModel.Create(x!))
+            Utilities.GetUnmarkedRecordModel)
             .WithTrackingName(TrackingNames.UnmarkedRecordModels);
 
         context.RegisterSourceOutput(markedTypes, Emitter.GenerateSource);
-        context.RegisterSourceOutput(unmarkedRecords, Emitter.GenerateSource);
+        context.RegisterSourceOutput(unmarkedRecords, Emitter.GenerateSourceIfPresent);
     }
 }
