@@ -21,9 +21,7 @@ RecordsPlus is a Roslyn Source Generator that provides the same features records
   * [NuGet packages](#nuget-packages)
   * [Examples](#examples)
   * [Other](#other)
-    * [Keeping Attributes In Code](#keeping-attributes-in-code)
-  * [Star History](#star-history)
-  * [Stats](#stats)<!-- endToc -->
+    * [Keeping Attributes In Code](#keeping-attributes-in-code)<!-- endToc -->
 
 ## NuGet packages
 
@@ -151,10 +149,3 @@ If you wish to preserve these attributes in the build output, add the define con
 ```
 
 <a href='#toc' title='Back to Contents'>Back to Contents</a>
-## Star History
-
-[![Star History Chart](https://api.star-history.com/svg?repos=distantcam/recordsplus&type=date&legend=top-left)](https://www.star-history.com/#distantcam/recordsplus&type=date&legend=top-left)
-
-## Stats
-
-![Alt](https://repobeats.axiom.co/api/embed/8d02b2c004a5f958b4365abad3d4d1882dca200f.svg "Repobeats analytics image")
