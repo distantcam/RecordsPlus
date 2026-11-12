@@ -58,7 +58,9 @@ internal sealed record TypeModel(
     // so keep walking until it is found rather than only looking at the immediate base.
     // All three answers come out of one walk: the chain can be long and every base costs an
     // attribute scan, so walking it once per answer tripled that cost.
-    private static (INamedTypeSymbol? EqualityContract, INamedTypeSymbol? PrintMembers, INamedTypeSymbol? EqualsBase) FindBases(INamedTypeSymbol type)
+    private static
+        (INamedTypeSymbol? EqualityContract, INamedTypeSymbol? PrintMembers, INamedTypeSymbol? EqualsBase)
+        FindBases(INamedTypeSymbol type)
     {
         INamedTypeSymbol? equalityContract = null;
         INamedTypeSymbol? printMembers = null;

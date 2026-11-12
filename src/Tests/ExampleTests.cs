@@ -12,7 +12,8 @@ internal sealed class ExampleTests
     [CombinedDataSources]
     public async Task ExamplesGeneratedCode(
         [MethodDataSource(nameof(GetExamples))] CodeFileTheoryData theoryData,
-        [ClassDataSource<CompilationBuilderFactory>(Shared = SharedType.PerTestSession)] CompilationBuilderFactory builderFactory)
+        [ClassDataSource<CompilationBuilderFactory>(Shared = SharedType.PerTestSession)]
+        CompilationBuilderFactory builderFactory)
     {
         var builder = builderFactory.Create(theoryData);
         var compilation = builder.Build(nameof(ExampleTests));
@@ -34,7 +35,8 @@ internal sealed class ExampleTests
     [CombinedDataSources]
     public async Task CodeCompilesProperly(
         [MethodDataSource(nameof(GetExamples))] CodeFileTheoryData theoryData,
-        [ClassDataSource<CompilationBuilderFactory>(Shared = SharedType.PerTestSession)] CompilationBuilderFactory builderFactory)
+        [ClassDataSource<CompilationBuilderFactory>(Shared = SharedType.PerTestSession)]
+        CompilationBuilderFactory builderFactory)
     {
         var builder = builderFactory.Create(theoryData);
         var compilation = builder.Build(nameof(ExampleTests));
@@ -59,7 +61,8 @@ internal sealed class ExampleTests
     [CombinedDataSources]
     public async Task EnsureRunsAreCachedCorrectly(
         [MethodDataSource(nameof(GetExamples))] CodeFileTheoryData theoryData,
-        [ClassDataSource<CompilationBuilderFactory>(Shared = SharedType.PerTestSession)] CompilationBuilderFactory builderFactory)
+        [ClassDataSource<CompilationBuilderFactory>(Shared = SharedType.PerTestSession)]
+        CompilationBuilderFactory builderFactory)
     {
         var builder = builderFactory.Create(theoryData);
         var compilation = builder.Build(nameof(ExampleTests));

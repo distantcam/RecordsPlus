@@ -11,7 +11,8 @@ internal sealed class GeneratedBehaviorTests
     [CombinedDataSources]
     public async Task EqualityOperatorIsNotSelfRecursive(
         [MethodDataSource(typeof(ExampleTests), nameof(ExampleTests.GetExamples))] CodeFileTheoryData theoryData,
-        [ClassDataSource<ExampleTests.CompilationBuilderFactory>(Shared = SharedType.PerTestSession)] ExampleTests.CompilationBuilderFactory builderFactory)
+        [ClassDataSource<ExampleTests.CompilationBuilderFactory>(Shared = SharedType.PerTestSession)]
+        ExampleTests.CompilationBuilderFactory builderFactory)
     {
         var builder = builderFactory.Create(theoryData);
         var compilation = builder.Build(nameof(GeneratedBehaviorTests));
@@ -58,7 +59,8 @@ internal sealed class GeneratedBehaviorTests
     [Test]
     [CombinedDataSources]
     public async Task ToStringWithEveryMemberIgnoredMatchesEmptyRecordFormat(
-        [ClassDataSource<ExampleTests.CompilationBuilderFactory>(Shared = SharedType.PerTestSession)] ExampleTests.CompilationBuilderFactory builderFactory)
+        [ClassDataSource<ExampleTests.CompilationBuilderFactory>(Shared = SharedType.PerTestSession)]
+        ExampleTests.CompilationBuilderFactory builderFactory)
     {
         var instance = CreateInstance(builderFactory, "IgnoreAllToStringTest", "IgnoreAllToStringTest",
             ("Value", 42), ("Text", "hello"));
@@ -70,7 +72,8 @@ internal sealed class GeneratedBehaviorTests
     [Test]
     [CombinedDataSources]
     public async Task ToStringWithInheritedMembersDoesNotEmitTrailingSeparator(
-        [ClassDataSource<ExampleTests.CompilationBuilderFactory>(Shared = SharedType.PerTestSession)] ExampleTests.CompilationBuilderFactory builderFactory)
+        [ClassDataSource<ExampleTests.CompilationBuilderFactory>(Shared = SharedType.PerTestSession)]
+        ExampleTests.CompilationBuilderFactory builderFactory)
     {
         var instance = CreateInstance(builderFactory, "IgnoreAllToStringInheritanceTest", "IgnoreAllToString",
             ("Value", "Bar"), ("Number", 3));
@@ -82,7 +85,8 @@ internal sealed class GeneratedBehaviorTests
     [Test]
     [CombinedDataSources]
     public async Task ToStringPrintsMembersThatShadowGeneratedLocals(
-        [ClassDataSource<ExampleTests.CompilationBuilderFactory>(Shared = SharedType.PerTestSession)] ExampleTests.CompilationBuilderFactory builderFactory)
+        [ClassDataSource<ExampleTests.CompilationBuilderFactory>(Shared = SharedType.PerTestSession)]
+        ExampleTests.CompilationBuilderFactory builderFactory)
     {
         var instance = CreateInstance(builderFactory, "ShadowedMemberNamesTest", "ShadowedMemberNamesTest",
             ("builder", "b"), ("other", "o"), ("hashCode", 7));
@@ -95,7 +99,8 @@ internal sealed class GeneratedBehaviorTests
     [Test]
     [CombinedDataSources]
     public async Task EqualityUsesMembersThatShadowGeneratedLocals(
-        [ClassDataSource<ExampleTests.CompilationBuilderFactory>(Shared = SharedType.PerTestSession)] ExampleTests.CompilationBuilderFactory builderFactory)
+        [ClassDataSource<ExampleTests.CompilationBuilderFactory>(Shared = SharedType.PerTestSession)]
+        ExampleTests.CompilationBuilderFactory builderFactory)
     {
         var assembly = Emit(builderFactory, "ShadowedMemberNamesTest");
         var baseline = CreateInstance(assembly, "ShadowedMemberNamesTest",
@@ -120,7 +125,8 @@ internal sealed class GeneratedBehaviorTests
     [Test]
     [CombinedDataSources]
     public async Task InheritanceThroughAnUnmarkedBaseStillChains(
-        [ClassDataSource<ExampleTests.CompilationBuilderFactory>(Shared = SharedType.PerTestSession)] ExampleTests.CompilationBuilderFactory builderFactory)
+        [ClassDataSource<ExampleTests.CompilationBuilderFactory>(Shared = SharedType.PerTestSession)]
+        ExampleTests.CompilationBuilderFactory builderFactory)
     {
         var assembly = Emit(builderFactory, "DeepInheritanceTest");
         var baseline = CreateInstance(assembly, "DeepLeaf", ("A", 1), ("B", 2), ("C", 3));
@@ -141,7 +147,8 @@ internal sealed class GeneratedBehaviorTests
     [Test]
     [CombinedDataSources]
     public async Task RecordIgnoreAppliesWithoutTheRecordAttribute(
-        [ClassDataSource<ExampleTests.CompilationBuilderFactory>(Shared = SharedType.PerTestSession)] ExampleTests.CompilationBuilderFactory builderFactory)
+        [ClassDataSource<ExampleTests.CompilationBuilderFactory>(Shared = SharedType.PerTestSession)]
+        ExampleTests.CompilationBuilderFactory builderFactory)
     {
         var assembly = Emit(builderFactory, "RecordWithoutAttributeTest");
         var baseline = CreateInstance(assembly, "RecordWithoutAttributeTest",
@@ -188,7 +195,8 @@ internal sealed class GeneratedBehaviorTests
         return instance;
     }
 
-    private static System.Reflection.Assembly Emit(ExampleTests.CompilationBuilderFactory builderFactory, string exampleName)
+    private static System.Reflection.Assembly Emit(
+        ExampleTests.CompilationBuilderFactory builderFactory, string exampleName)
     {
         var file = GetExamplesFiles("Examples")
             .FirstOrDefault(f => Path.GetFileNameWithoutExtension(f) == exampleName)

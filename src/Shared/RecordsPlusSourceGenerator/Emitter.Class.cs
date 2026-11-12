@@ -98,8 +98,8 @@ public partial class RecordsPlusSourceGenerator
                         if (member.IgnoreEquality)
                             continue;
 
-                        source.AppendLine().AppendIndent()
-                            .Append($"{source.IndentChar}&& {EqualityComparer(member)}.Equals({Self(member)}, {Other(member)})");
+                        source.AppendLine().AppendIndent().Append(
+                            $"{source.IndentChar}&& {EqualityComparer(member)}.Equals({Self(member)}, {Other(member)})");
                     }
                     source.Append(";").AppendLine();
                 }

@@ -78,7 +78,8 @@ public partial class RecordsPlusSourceGenerator
             using (source.StartBlock())
             {
                 if (!type.IsStruct)
-                    source.AppendLine("global::System.Runtime.CompilerServices.RuntimeHelpers.EnsureSufficientExecutionStack();");
+                    source.AppendLine(
+                        "global::System.Runtime.CompilerServices.RuntimeHelpers.EnsureSufficientExecutionStack();");
 
                 if (!type.Members.Any(static m => !m.IgnoreToString))
                 {
@@ -142,7 +143,8 @@ public partial class RecordsPlusSourceGenerator
                         if (member.IgnoreEquality)
                             continue;
 
-                        source.AppendLine($"hashCode = hashCode * -1521134295 + {EqualityComparer(member)}.GetHashCode({Self(member)});");
+                        source.AppendLine(
+                            $"hashCode = hashCode * -1521134295 + {EqualityComparer(member)}.GetHashCode({Self(member)});");
                     }
 
                     source.AppendLine("return hashCode;");
